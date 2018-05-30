@@ -24,7 +24,7 @@ DATA SEGMENT
 				dd ? 
 				dd 0 
 				dd 0 
-	PROG_PATH	db 'LAB2.COM',0
+	PROG_PATH	db 20h dup(0)
 	KEEP_SS dw 0
 	KEEP_SP dw 0
 DATA ENDS
@@ -106,6 +106,44 @@ CREATE_BLOCK ENDP
 RUN_PROG PROC
 	mov dx,offset STRENDL
 	call PRINT
+	mov es,es:[2ch]
+	mov si,0
+next1:
+	mov dl,es:[si]
+	cmp dl,0
+	je end_path
+	inc si
+	jmp next1
+	
+end_path:
+	inc si
+	mov dl,es:[si]
+	cmp dl,0
+	jne next1
+	add si,3
+	lea di,PROG_PATH
+	
+next2:
+	mov dl, es:[si]
+	cmp dl,0
+	je end_copy
+	mov [di],dl
+	inc di
+	inc si
+	jmp next2
+	
+end_copy:
+	sub di,8
+	
+	mov [di], byte ptr 'l'	
+	mov [di+1], byte ptr 'a'
+	mov [di+2], byte ptr 'b'
+	mov [di+3], byte ptr '2'
+	mov [di+4], byte ptr '.'
+	mov [di+5], byte ptr 'c'
+	mov [di+6], byte ptr 'o'
+	mov [di+7], byte ptr 'm'
+
 	mov dx,offset PROG_PATH
 	
 	mov KEEP_SP, sp
